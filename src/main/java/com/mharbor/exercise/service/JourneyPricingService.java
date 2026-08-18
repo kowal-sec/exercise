@@ -17,13 +17,11 @@ public class JourneyPricingService {
         if (costPerKm.signum() < 0) {
             throw new IllegalArgumentException("costPerKm must not be negative: " + costPerKm);
         }
-        if (distanceKm.compareTo(STANDARD_RATE_THRESHOLD_KM) <= 0){
-            return round(distanceKm.multiply(costPerKm));
-        }
 
-        BigDecimal distanceDistanceKm = distanceKm.subtract(STANDARD_RATE_THRESHOLD_KM);
+        BigDecimal standardDistanceKm = distanceKm.min(STANDARD_RATE_THRESHOLD_KM);
+        BigDecimal distanceDistanceKm = distanceKm.subtract(STANDARD_RATE_THRESHOLD_KM).max(BigDecimal.ZERO);
 
-        BigDecimal standardCost = STANDARD_RATE_THRESHOLD_KM.multiply(costPerKm);
+        BigDecimal standardCost = standardDistanceKm.multiply(costPerKm);
         BigDecimal discoutedCost = distanceDistanceKm.multiply(costPerKm).multiply(BigDecimal.ONE.subtract(DISCOUNT_RATE));
 
         return round(standardCost.add(discoutedCost));

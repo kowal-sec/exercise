@@ -31,8 +31,8 @@ class JourneyPricingServiceTest {
 
     @Test
     void appliesDiscountToSmallExcessOver100Km() {
-        BigDecimal result = service.calculateCost(new BigDecimal("100.01"), new BigDecimal("1"));
-        assertEquals(0, result.compareTo(new BigDecimal("100.01")));
+        BigDecimal result = service.calculateCost(new BigDecimal("100.10"), new BigDecimal("1"));
+        assertEquals(0, result.compareTo(new BigDecimal("100.09")));
     }
 
     @Test

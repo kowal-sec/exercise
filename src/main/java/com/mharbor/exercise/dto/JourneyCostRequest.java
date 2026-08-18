@@ -10,5 +10,7 @@ public record JourneyCostRequest(
         @DecimalMin(value = "0.0")
         BigDecimal distanceKm,
         @NotNull @DecimalMin(value = "0.0")
-        BigDecimal costPerKm) {
+        BigDecimal costPerKm,
+        String customerId
+) {
 }

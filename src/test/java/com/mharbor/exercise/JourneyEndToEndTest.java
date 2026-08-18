@@ -27,4 +27,13 @@ public class JourneyEndToEndTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalCost").value(47.50));
     }
+
+    @Test
+    void appliesTransXDiscountOnTopOfTieredPricing() throws Exception {
+        mockMvc.perform(post("/api/journeys/cost")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"distanceKm\": 200, \"costPerKm\": 0.25, \"customerId\": \"TransX\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalCost").value(45.13));
+    }
 }

@@ -1,5 +1,6 @@
 package com.mharbor.exercise.controller;
 
+import com.mharbor.exercise.service.JourneyDiscountService;
 import com.mharbor.exercise.service.JourneyPricingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,13 @@ class JourneyControllerTest {
     @MockitoBean
     private JourneyPricingService pricingService;
 
+    @MockitoBean
+    private JourneyDiscountService discountService;
+
     @Test
     void returnsCalculatedCost() throws Exception {
         when(pricingService.calculateCost(any(), any())).thenReturn(new BigDecimal("47.50"));
+        when(discountService.applyCustomerDiscount(any(), any())).thenReturn(new BigDecimal("47.50"));
 
         mockMvc.perform(post("/api/journeys/cost")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -37,6 +42,19 @@ class JourneyControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalCost").value(47.50));
+    }
+
+    @Test
+    void returnsFinalCostAfterTransXDiscount() throws Exception {
+        when(pricingService.calculateCost(any(), any())).thenReturn(new BigDecimal("47.50"));
+        when(discountService.applyCustomerDiscount(new BigDecimal("47.50"), "TransX"))
+                .thenReturn(new BigDecimal("45.13"));
+
+        mockMvc.perform(post("/api/journeys/cost")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"distanceKm\": 200, \"costPerKm\": 0.25, \"customerId\": \"TransX\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalCost").value(45.13));
     }
 
     @Test
